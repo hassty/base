@@ -4,17 +4,21 @@
 #include "log.h"
 #include "util.h"
 
+void *memory_alloc(usize size);
+void memory_release(void* ptr, usize size);
+
 #if defined(MEMORY_STDLIB)
 #include <stdlib.h>
-#include <unistd.h>
-static inline void *malloc_aligned(usize size) {
+
+void *memory_alloc(usize size) {
     void *ptr = malloc(size);
     ASSERT(ptr != NULL, "malloc error");
     LOG_DBG("malloc(0x%p) allocated 0x%zx bytes", ptr, size);
 
     return ptr;
 }
-static inline void free_aligned(void *ptr, usize size) {
+
+void memory_release(void *ptr, usize size) {
     if (ptr == NULL || size == 0) {
         return;
     }
@@ -22,16 +26,18 @@ static inline void free_aligned(void *ptr, usize size) {
     LOG_DBG("free(0x%p) released 0x%zx bytes", ptr, size);
 }
 
-#define MEMORY_ALLOC(size) (malloc_aligned(size))
-#define MEMORY_RELEASE(ptr, size) (free_aligned(ptr, size))
 #elif defined(MEMORY_MMAP)
 #include <sys/mman.h>
 #include <unistd.h>
 
-static inline void *mem_alloc(usize size) {
-    long pagesize = sysconf(_SC_PAGESIZE);
+static usize _memory_internal_pageSize = 0;
 
-    usize size_aligned = ROUND_DIV(size, pagesize) * pagesize;
+void *memory_alloc(usize size) {
+    if (_memory_internal_pageSize == 0) {
+        _memory_internal_pageSize = sysconf(_SC_PAGESIZE);
+    }
+
+    usize size_aligned = ROUND_DIV(size, _memory_internal_pageSize) * _memory_internal_pageSize;
     void *ptr = mmap(NULL, size_aligned, PROT_READ | PROT_WRITE,
                      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     ASSERT(ptr != MAP_FAILED, "mmap error");
@@ -40,18 +46,16 @@ static inline void *mem_alloc(usize size) {
     return ptr;
 }
 
-static inline void mem_release(void *ptr, usize size) {
+void memory_release(void *ptr, usize size) {
+    ASSERT(_memory_internal_pageSize != 0, "release called without alloc");
+
     if (ptr == NULL || size == 0) {
         return;
     }
-    long pagesize = sysconf(_SC_PAGESIZE);
-    usize size_aligned = ROUND_DIV(size, pagesize) * pagesize;
+    usize size_aligned = ROUND_DIV(size, _memory_internal_pageSize) * _memory_internal_pageSize;
     ASSERT(munmap(ptr, size_aligned) == 0, "munmap error");
     LOG_DBG("munmap(0x%p) released 0x%zx bytes", ptr, size_aligned);
 }
-
-#define MEMORY_ALLOC(size) (mem_alloc((size)))
-#define MEMORY_RELEASE(ptr, size) (mem_release((ptr), (size)))
 #else
 #error at least one memory backend must be defined
 #endif

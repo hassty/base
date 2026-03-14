@@ -23,7 +23,7 @@ void arena_reset(Arena *arena);
 Arena arena_create(usize capacity) {
     usize word_size = MEMBER_SIZE(Arena, data);
     usize capacity_aligned = ROUND_DIV(capacity, word_size);
-    uintptr_t *data = MEMORY_ALLOC(capacity_aligned * word_size);
+    uintptr_t *data = memory_alloc(capacity_aligned * word_size);
     ASSERT(data != NULL, "not enough memory");
 
     return (Arena){
@@ -40,7 +40,7 @@ void arena_destroy(Arena *arena) {
     }
 
     usize word_size = MEMBER_SIZE(Arena, data);
-    MEMORY_RELEASE(arena->data, arena->capacity * word_size);
+    memory_release(arena->data, arena->capacity * word_size);
     MEMORY_ZERO_STRUCT(arena);
 }
 
