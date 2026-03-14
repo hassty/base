@@ -3,13 +3,13 @@
 #include <stdlib.h>
 
 static void *m_malloc_reserve(void *ctx, u64 size) {
-    ARG_UNUSED(ctx);
+    UNUSED(ctx);
     return malloc(size);
 }
 
 static void m_malloc_release(void *ctx, void *ptr, u64 size) {
-    ARG_UNUSED(ctx);
-    ARG_UNUSED(size);
+    UNUSED(ctx);
+    UNUSED(size);
     free(ptr);
 }
 

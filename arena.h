@@ -26,7 +26,7 @@ Arena arena_create(usize capacity) {
     uintptr_t *data = MEMORY_ALLOC(capacity_aligned * word_size);
     ASSERT(data != NULL, "not enough memory");
 
-    return CLITERAL(Arena){
+    return (Arena){
         .size = 0,
         .capacity = capacity_aligned,
         .data = data,

@@ -15,9 +15,9 @@ typedef struct {
 } m_base_memory;
 
 static inline void m_change_memory_func_noop(void *ctx, void *ptr, u64 size) {
-    ARG_UNUSED(ctx);
-    ARG_UNUSED(ptr);
-    ARG_UNUSED(size);
+    UNUSED(ctx);
+    UNUSED(ptr);
+    UNUSED(size);
 }
 
 typedef struct {

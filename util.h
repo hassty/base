@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define ARG_UNUSED(arg) ((void)(arg))
+#define UNUSED(arg) ((void)(arg))
 
 #define ARRAY_SIZE(arr) (sizeof((arr)) / sizeof((arr)[0]))
 
@@ -109,10 +109,12 @@ typedef void void_fn_ptr(void);
 #define DLL_PUSH_BACK(f, l, n) DLL_PUSH_BACK_NP(f, l, n, next, prev)
 #define DLL_PUSH_FRONT(f, l, n) DLL_PUSH_BACK_NP(l, f, n, prev, next)
 #define DLL_REMOVE_NP(f, l, n, next, prev)                                     \
-    (((f) == (n)) ? ((f) = (f)->next, (f)->prev = 0)                           \
+    (((f) == (l) && (f) == (n)) ? ((f) = (l) = 0)                              \
+     : ((f) == (n))             ? ((f) = (f)->next, (f)->prev = 0)             \
      : ((l) == (n))                                                            \
          ? ((l) = (l)->prev, (l)->next = 0)                                    \
-         : ((n)->next->prev = (n)->prev, (n)->prev->next = (n)->next))
+         : (((n)->prev == 0) ? 0 : ((n)->prev->next = (n)->next)), \
+           (((n)->next == 0) ? 0 : ((n)->next->prev = (n)->prev)))
 #define DLL_REMOVE(f, l, n) DLL_REMOVE_NP(f, l, n, next, prev)
 
 #define SLL_QUEUE_PUSH_N(f, l, n, next)                                        \
@@ -131,5 +133,82 @@ typedef void void_fn_ptr(void);
 #define SLL_STACK_PUSH(f, n) SLL_STACK_PUSH_N(f, n, next)
 #define SLL_STACK_POP_N(f, next) (((f) == 0) ? 0 : ((f) = (f)->next))
 #define SLL_STACK_POP(f) SLL_STACK_POP_N(f, next)
+
+typedef struct {
+    f32 x;
+    f32 y;
+} Vec2;
+
+typedef struct {
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
+} Rgba;
+
+#define HOUR_TO_MIN(hour)  ((hour) * 60ULL)
+#define HOUR_TO_SEC(hour)  ((hour) * 3600ULL)
+#define MIN_TO_SEC(min)    ((min) * 60ULL)
+#define MIN_TO_HOUR(min)   ((min) / 60ULL)
+#define SEC_TO_HOUR(sec)   ((sec) / 3600ULL)
+#define SEC_TO_MIN(sec)    ((sec) / 60ULL)
+#define SEC_TO_MSEC(sec)   ((sec) * 1000ULL)
+#define SEC_TO_USEC(sec)   ((sec) * 1000000ULL)
+#define SEC_TO_NSEC(sec)   ((sec) * 1000000000ULL)
+#define SEC_TO_NSEC(sec)   ((sec) * 1000000000ULL)
+#define MSEC_TO_SEC(msec)  ((msec) / 1000ULL)
+#define MSEC_TO_USEC(msec) ((msec) * 1000ULL)
+#define MSEC_TO_NSEC(msec) ((msec) * 1000000ULL)
+#define USEC_TO_SEC(usec)  ((usec) / 1000000ULL)
+#define USEC_TO_MSEC(usec) ((usec) / 1000ULL)
+#define USEC_TO_NSEC(usec) ((usec) * 1000ULL)
+#define NSEC_TO_USEC(nsec) ((nsec) / 1000ULL)
+#define NSEC_TO_MSEC(nsec) ((nsec) / 1000000ULL)
+#define NSEC_TO_SEC(nsec)  ((nsec) / 1000000000ULL)
+
+typedef struct {
+    u16 usec; // [0,999]
+    u16 msec; // [0,999]
+    u8 sec;   // [0,60]
+    u8 min;   // [0,60]
+    u8 hour;  // [0,60]
+} Time;
+
+#define TIME_FORMAT "%02d:%02d:%02d.%03d,%03d"
+#define TIME_EXPAND(t) (t)->hour, (t)->min, (t)->sec, (t)->msec, (t)->usec
+
+// TODO: move to separate file?
+static inline Time UsecToTime(u64 usec) {
+    u8 hour = SEC_TO_HOUR(USEC_TO_SEC(usec));
+    usec -= SEC_TO_USEC(HOUR_TO_SEC(hour));
+    u8 min = 0;
+    if (usec > 0) {
+        min = SEC_TO_MIN(USEC_TO_SEC(usec));
+        usec -= SEC_TO_USEC(MIN_TO_SEC(min));
+    }
+    u8 sec = 0;
+    if (usec > 0) {
+        sec = USEC_TO_SEC(usec);
+        usec -= SEC_TO_USEC(sec);
+    }
+    u16 msec = 0;
+    if (usec > 0) {
+        msec = USEC_TO_MSEC(usec);
+        usec -= MSEC_TO_USEC(msec);
+    }
+
+    return (Time){
+        .hour = hour,
+        .min = min,
+        .sec = sec,
+        .msec = msec,
+        .usec = usec,
+    };
+}
+
+static inline u64 TimeToUsec(Time t) {
+    return SEC_TO_USEC(HOUR_TO_SEC(t.hour)) + SEC_TO_USEC(MIN_TO_SEC(t.min)) + 
+           SEC_TO_USEC(t.sec) + MSEC_TO_USEC(t.msec) + t.usec;
+}
 
 #endif /* UTIL_H */
