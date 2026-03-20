@@ -2,7 +2,7 @@
 #define MEMORY_H
 
 #include "log.h"
-#include "util.h"
+#include "base.h"
 
 void *memory_alloc(usize size);
 void memory_release(void* ptr, usize size);

@@ -1,7 +1,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include "util.h"
+#include "base.h"
 
 #define ANSI_RESET "\x1b[0;0m"
 

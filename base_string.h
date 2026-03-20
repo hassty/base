@@ -2,7 +2,7 @@
 #define BASE_STRING_H
 
 #include "base_memory.h"
-#include "util.h"
+#include "base.h"
 #include <stdarg.h>
 
 typedef struct {

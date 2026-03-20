@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef BASE_H
+#define BASE_H
 
 #include <stdbool.h>
 
@@ -16,12 +16,13 @@
 
 #define MEMORY_MATCH(a, b, size) (memcmp((a), (b), (size)) == 0)
 
-#define MEMORY_COPY(dst, src, size) memmove((dst), (src), (size))
-#define MEMORY_COPY_STRUCT(dst, src)                                           \
+#define MEMORY_COPY(dst, src, size) \
+    memmove((dst), (src), (size))
+#define MEMORY_COPY_STRUCT(dst, src) \
     MEMORY_COPY((dst), (src), MIN(sizeof(*(dst)), sizeof(*(src))))
-#define MEMORY_COPY_ARRAY(dst, src)                                            \
+#define MEMORY_COPY_ARRAY(dst, src) \
     MEMORY_COPY((dst), (src), MIN(sizeof(dst), sizeof(src)))
-#define MEMORY_COPY_TYPED(dst, src, count)                                     \
+#define MEMORY_COPY_TYPED(dst, src, count) \
     MEMORY_COPY((dst), (src), MIN(sizeof(*(dst)), sizeof(*(src))) * (count))
 #endif /* NO_STDLIB */
 
@@ -45,11 +46,11 @@
 #define ROUND_DIV(a, b) (((a) + ((b) - 1)) / (b))
 
 #define POINTER_TO_UINT(x) ((uintptr_t)(x))
-#define UINT_TO_POINTER(x) ((void *)(uintptr_t)(x))
+#define UINT_TO_POINTER(x) ((void*)(uintptr_t)(x))
 #define POINTER_TO_INT(x) ((intptr_t)(x))
-#define INT_TO_POINTER(x) ((void *)(intptr_t)(x))
+#define INT_TO_POINTER(x) ((void*)(intptr_t)(x))
 
-#define MEMBER(type, member) (((type *)(0))->member)
+#define MEMBER(type, member) (((type*)(0))->member)
 #define MEMBER_SIZE(type, member) (sizeof(MEMBER(type, member)))
 #define MEMBER_OFFSET(type, member) POINTER_TO_UINT(&MEMBER(type, member))
 
@@ -68,7 +69,7 @@
 #endif
 
 #ifndef CLAMP
-#define CLAMP(min, x, max)                                                     \
+#define CLAMP(min, x, max) \
     (((x) < (min)) ? (min) : (((x) > (max)) ? (max) : (x)))
 #define CLAMP_TOP(a, b) MIN(a, b)
 #define CLAMP_BOT(a, b) MAX(a, b)
@@ -99,33 +100,33 @@ typedef ptrdiff_t isize;
 typedef void void_fn_ptr(void);
 #endif /* NO_STDLIB */
 
-#define DEFER_LOOP(begin, end)                                                 \
+#define DEFER_LOOP(begin, end) \
     for (int _i_ = ((begin), 0); !_i_; _i_ += 1, (end))
 
-#define DLL_PUSH_BACK_NP(f, l, n, next, prev)                                  \
-    (((f) == 0)                                                                \
-         ? ((f) = (l) = (n), (n)->next = (n)->prev = 0)                        \
+#define DLL_PUSH_BACK_NP(f, l, n, next, prev)                            \
+    (((f) == 0)                                                          \
+         ? ((f) = (l) = (n), (n)->next = (n)->prev = 0)                  \
          : ((n)->prev = (l), (l)->next = (n), (l) = (n), (n)->next = 0))
 #define DLL_PUSH_BACK(f, l, n) DLL_PUSH_BACK_NP(f, l, n, next, prev)
 #define DLL_PUSH_FRONT(f, l, n) DLL_PUSH_BACK_NP(l, f, n, prev, next)
-#define DLL_REMOVE_NP(f, l, n, next, prev)                                     \
-    (((f) == (l) && (f) == (n)) ? ((f) = (l) = 0)                              \
-     : ((f) == (n))             ? ((f) = (f)->next, (f)->prev = 0)             \
-     : ((l) == (n))                                                            \
-         ? ((l) = (l)->prev, (l)->next = 0)                                    \
+#define DLL_REMOVE_NP(f, l, n, next, prev)                         \
+    (((f) == (l) && (f) == (n)) ? ((f) = (l) = 0)                  \
+     : ((f) == (n))             ? ((f) = (f)->next, (f)->prev = 0) \
+     : ((l) == (n))                                                \
+         ? ((l) = (l)->prev, (l)->next = 0)                        \
          : (((n)->prev == 0) ? 0 : ((n)->prev->next = (n)->next)), \
            (((n)->next == 0) ? 0 : ((n)->next->prev = (n)->prev)))
 #define DLL_REMOVE(f, l, n) DLL_REMOVE_NP(f, l, n, next, prev)
 
-#define SLL_QUEUE_PUSH_N(f, l, n, next)                                        \
-    (((f) == 0) ? ((f) = (l) = (n))                                            \
+#define SLL_QUEUE_PUSH_N(f, l, n, next)                          \
+    (((f) == 0) ? ((f) = (l) = (n))                              \
                 : (((l)->next = (n), (l) = (n)), (n)->next = 0))
 #define SLL_QUEUE_PUSH(f, l, n) SLL_QUEUE_PUSH_N(f, l, n, next)
-#define SLL_QUEUE_PUSH_FRONT_N(f, l, n, next)                                  \
-    (((f) == 0) ? ((f) = (l) = (n), (n)->next = 0)                             \
+#define SLL_QUEUE_PUSH_FRONT_N(f, l, n, next)      \
+    (((f) == 0) ? ((f) = (l) = (n), (n)->next = 0) \
                 : ((n)->next = (f), (f) = (n)))
 #define SLL_QUEUE_PUSH_FRONT(f, l, n) SLL_QUEUE_PUSH_FRONT_N(f, l, n, next)
-#define SLL_QUEUE_POP_N(f, l, next)                                            \
+#define SLL_QUEUE_POP_N(f, l, next) \
     (((f) == (l)) ? ((f) = (l) = 0) : ((f) = (f)->next))
 #define SLL_QUEUE_POP(f, l) SLL_QUEUE_POP_N(f, l, next)
 
@@ -154,7 +155,6 @@ typedef struct {
 #define SEC_TO_MIN(sec)    ((sec) / 60ULL)
 #define SEC_TO_MSEC(sec)   ((sec) * 1000ULL)
 #define SEC_TO_USEC(sec)   ((sec) * 1000000ULL)
-#define SEC_TO_NSEC(sec)   ((sec) * 1000000000ULL)
 #define SEC_TO_NSEC(sec)   ((sec) * 1000000000ULL)
 #define MSEC_TO_SEC(msec)  ((msec) / 1000ULL)
 #define MSEC_TO_USEC(msec) ((msec) * 1000ULL)
@@ -198,11 +198,11 @@ static inline Time UsecToTime(u64 usec) {
     }
 
     return (Time){
-        .hour = hour,
-        .min = min,
-        .sec = sec,
+        .usec = (u16)usec,
         .msec = msec,
-        .usec = usec,
+        .sec = sec,
+        .min = min,
+        .hour = hour,
     };
 }
 
@@ -211,4 +211,4 @@ static inline u64 TimeToUsec(Time t) {
            SEC_TO_USEC(t.sec) + MSEC_TO_USEC(t.msec) + t.usec;
 }
 
-#endif /* UTIL_H */
+#endif /* BASE_H */

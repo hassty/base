@@ -1,7 +1,7 @@
 #ifndef BASE_MEMORY_H
 #define BASE_MEMORY_H
 
-#include "util.h"
+#include "base.h"
 
 typedef void *m_reserve_func(void *ctx, u64 size);
 typedef void m_change_memory_func(void *ctx, void *ptr, u64 size);

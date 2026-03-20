@@ -1,7 +1,7 @@
 #ifndef ARENA_H
 #define ARENA_H
 
-#include "util.h"
+#include "base.h"
 
 typedef struct {
     uintptr_t *data;
@@ -18,7 +18,7 @@ void arena_reset(Arena *arena);
 
 #include "log.h"
 #include "memory.h"
-#include "util.h"
+#include "base.h"
 
 Arena arena_create(usize capacity) {
     usize word_size = MEMBER_SIZE(Arena, data);

@@ -1,7 +1,7 @@
 #ifndef OS_H
 #define OS_H
 
-#include "util.h"
+#include "base.h"
 
 u64 OsNowUsec(void);
 void OsSleepUsec(u64 sleepUsec);
