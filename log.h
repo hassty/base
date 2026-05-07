@@ -33,7 +33,7 @@ typedef enum {
 do {                                                                                 \
     if ((_level) < _log_internal_level) break;                                       \
     static const char* _log_internal_level_str[] = { LOG_LEVELS(AS_LOG_LEVEL_STR) }; \
-    Time t = UsecToTime(_log_internal_uptime());                                     \
+    Time t = usec_to_time(_log_internal_uptime());                                     \
     fprintf(stderr,                                                                  \
             _color "[" TIME_FORMAT "] <%s> " __FILE__                                \
                 ":" STR(__LINE__) ":%s: " _msg ANSI_RESET "\n",                      \
@@ -48,7 +48,7 @@ do {                                                                            
 #define LOG_WRN(msg, ...) __LOG_COMMON(LOG_WRN, ANSI_YELLOW, msg, ##__VA_ARGS__)
 #define LOG_ERR(msg, ...) __LOG_COMMON(LOG_ERR, ANSI_RED, msg, ##__VA_ARGS__)
 
-void LogInit(LogLevels level);
+void log_init(LogLevels level);
 
 #ifdef LOG_IMPLEMENTATION
 
@@ -57,13 +57,13 @@ void LogInit(LogLevels level);
 static u64 _log_internal_startUsec = 0;
 static LogLevels _log_internal_level = LOG_DBG;
 
-void LogInit(LogLevels level) {
-    _log_internal_startUsec = OsNowUsec();
+void log_init(LogLevels level) {
+    _log_internal_startUsec = os_now_usec();
     _log_internal_level = level;
 }
 
 static inline u64 _log_internal_uptime(void) {
-    return OsNowUsec() - _log_internal_startUsec;
+    return os_now_usec() - _log_internal_startUsec;
 }
 
 #endif /* LOG_IMPLEMENTATION */

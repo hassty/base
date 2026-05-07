@@ -5,7 +5,7 @@
 
 #define UNUSED(arg) ((void)(arg))
 
-#define ARRAY_SIZE(arr) (sizeof((arr)) / sizeof((arr)[0]))
+#define ARRAY_LENGTH(arr) (sizeof((arr)) / sizeof((arr)[0]))
 
 #ifndef NO_STDLIB
 #include <string.h>
@@ -185,7 +185,7 @@ typedef struct {
 #define TIME_EXPAND(t) (t)->hour, (t)->min, (t)->sec, (t)->msec, (t)->usec
 
 // TODO: move to separate file?
-static inline Time UsecToTime(u64 usec) {
+static inline Time usec_to_time(u64 usec) {
     u8 hour = SEC_TO_HOUR(USEC_TO_SEC(usec));
     usec -= SEC_TO_USEC(HOUR_TO_SEC(hour));
     u8 min = 0;
@@ -213,7 +213,7 @@ static inline Time UsecToTime(u64 usec) {
     };
 }
 
-static inline u64 TimeToUsec(Time t) {
+static inline u64 time_to_usec(Time t) {
     return SEC_TO_USEC(HOUR_TO_SEC(t.hour)) + SEC_TO_USEC(MIN_TO_SEC(t.min)) + 
            SEC_TO_USEC(t.sec) + MSEC_TO_USEC(t.msec) + t.usec;
 }
