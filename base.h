@@ -7,6 +7,9 @@
 
 #define ARRAY_LENGTH(arr) (sizeof((arr)) / sizeof((arr)[0]))
 
+// TODO: msvc
+#define FALLTHROUGH __attribute__((fallthrough))
+
 #ifndef NO_STDLIB
 #include <string.h>
 #define MEMORY_ZERO(x, size) memset((x), 0, (size))
@@ -15,6 +18,7 @@
 #define MEMORY_ZERO_TYPED(x, count) MEMORY_ZERO((x), sizeof(*(x)) * count)
 
 #define MEMORY_MATCH(a, b, size) (memcmp((a), (b), (size)) == 0)
+#define MEMORY_MATCH_STRUCT(a, b) MEMORY_MATCH(a, b, sizeof(*(a)))
 
 #define MEMORY_COPY(dst, src, size) \
     memmove((dst), (src), (size))
@@ -26,9 +30,11 @@
     MEMORY_COPY((dst), (src), MIN(sizeof(*(dst)), sizeof(*(src))) * (count))
 #endif /* NO_STDLIB */
 
+#include <assert.h>
+#define BUILD_ASSERT(x, msg) static_assert(x, msg)
+
 #ifdef ENABLE_ASSERT
 #ifndef ASSERT
-#include <assert.h>
 #define ASSERT(x, msg) (assert((x) && msg))
 #endif
 #else
