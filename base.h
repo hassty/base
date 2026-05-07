@@ -3,12 +3,28 @@
 
 #include <stdbool.h>
 
+#if defined(__clang__)
+#define COMPILER_CLANG 1
+#elif defined(__GNUC__) || defined(__GNUG__)
+#define COMPILER_GCC 1
+#elif defined(_MSC_VER)
+#define COMPILER_MSVC 1
+#endif
+
 #define UNUSED(arg) ((void)(arg))
+#if COMPILER_CLANG || COMPILER_GCC
+#define MAYBE_UNUSED [[maybe_unused]]
+#else
+#define MAYBE_UNUSED
+#endif
+
+#if COMPILER_CLANG || COMPILER_GCC
+#define FALLTHROUGH __attribute__((fallthrough))
+#else
+#define FALLTHROUGH
+#endif
 
 #define ARRAY_LENGTH(arr) (sizeof((arr)) / sizeof((arr)[0]))
-
-// TODO: msvc
-#define FALLTHROUGH __attribute__((fallthrough))
 
 #ifndef NO_STDLIB
 #include <string.h>
