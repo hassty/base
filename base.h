@@ -103,37 +103,44 @@ typedef void void_fn_ptr(void);
 #define DEFER_LOOP(begin, end) \
     for (int _i_ = ((begin), 0); !_i_; _i_ += 1, (end))
 
-#define DLL_PUSH_BACK_NP(f, l, n, next, prev)                            \
-    (((f) == 0)                                                          \
-         ? ((f) = (l) = (n), (n)->next = (n)->prev = 0)                  \
-         : ((n)->prev = (l), (l)->next = (n), (l) = (n), (n)->next = 0))
-#define DLL_PUSH_BACK(f, l, n) DLL_PUSH_BACK_NP(f, l, n, next, prev)
-#define DLL_PUSH_FRONT(f, l, n) DLL_PUSH_BACK_NP(l, f, n, prev, next)
-#define DLL_REMOVE_NP(f, l, n, next, prev)                         \
-    (((f) == (l) && (f) == (n)) ? ((f) = (l) = 0)                  \
-     : ((f) == (n))             ? ((f) = (f)->next, (f)->prev = 0) \
-     : ((l) == (n))                                                \
-         ? ((l) = (l)->prev, (l)->next = 0)                        \
-         : (((n)->prev == 0) ? 0 : ((n)->prev->next = (n)->next)), \
-           (((n)->next == 0) ? 0 : ((n)->next->prev = (n)->prev)))
-#define DLL_REMOVE(f, l, n) DLL_REMOVE_NP(f, l, n, next, prev)
+#define DLL_PUSH_BACK_NP_NIL(f, l, n, next, prev, nil)                       \
+    (((f) == (nil))                                                          \
+         ? ((f) = (l) = (n), (n)->next = (n)->prev = (nil))                  \
+         : ((n)->prev = (l), (l)->next = (n), (l) = (n), (n)->next = (nil)))
+#define DLL_PUSH_BACK_NIL(f, l, n, nil) DLL_PUSH_BACK_NP_NIL(f, l, n, next, prev, nil)
+#define DLL_PUSH_BACK(f, l, n) DLL_PUSH_BACK_NP_NIL(f, l, n, next, prev, NULL)
+#define DLL_PUSH_FRONT_NIL(f, l, n, nil) DLL_PUSH_BACK_NP_NIL(l, f, n, prev, next, nil)
+#define DLL_PUSH_FRONT(f, l, n) DLL_PUSH_BACK_NP_NIL(l, f, n, prev, next, NULL)
+#define DLL_REMOVE_NP_NIL(f, l, n, next, prev, nil)                    \
+    (((f) == (l) && (f) == (n)) ? ((f) = (l) = nil)                    \
+     : ((f) == (n))             ? ((f) = (f)->next, (f)->prev = nil)   \
+     : ((l) == (n))                                                    \
+         ? ((l) = (l)->prev, (l)->next = nil)                          \
+         : (((n)->prev == nil) ? nil : ((n)->prev->next = (n)->next)), \
+           (((n)->next == nil) ? nil : ((n)->next->prev = (n)->prev)))
+#define DLL_REMOVE_NIL(f, l, n, nil) DLL_REMOVE_NP_NIL(f, l, n, next, prev, nil)
+#define DLL_REMOVE(f, l, n) DLL_REMOVE_NP_NIL(f, l, n, next, prev, NULL)
 
-#define SLL_QUEUE_PUSH_N(f, l, n, next)                          \
-    (((f) == 0) ? ((f) = (l) = (n))                              \
-                : (((l)->next = (n), (l) = (n)), (n)->next = 0))
-#define SLL_QUEUE_PUSH(f, l, n) SLL_QUEUE_PUSH_N(f, l, n, next)
-#define SLL_QUEUE_PUSH_FRONT_N(f, l, n, next)      \
-    (((f) == 0) ? ((f) = (l) = (n), (n)->next = 0) \
+#define SLL_QUEUE_PUSH_N_NIL(f, l, n, next, nil)                   \
+    (((f) == nil) ? ((f) = (l) = (n))                              \
+                : (((l)->next = (n), (l) = (n)), (n)->next = nil))
+#define SLL_QUEUE_PUSH_NIL(f, l, n, nil) SLL_QUEUE_PUSH_N_NIL(f, l, n, next, nil)
+#define SLL_QUEUE_PUSH(f, l, n) SLL_QUEUE_PUSH_N_NIL(f, l, n, next, NULL)
+#define SLL_QUEUE_PUSH_FRONT_N_NIL(f, l, n, next, nil) \
+    (((f) == nil) ? ((f) = (l) = (n), (n)->next = nil) \
                 : ((n)->next = (f), (f) = (n)))
-#define SLL_QUEUE_PUSH_FRONT(f, l, n) SLL_QUEUE_PUSH_FRONT_N(f, l, n, next)
-#define SLL_QUEUE_POP_N(f, l, next) \
-    (((f) == (l)) ? ((f) = (l) = 0) : ((f) = (f)->next))
-#define SLL_QUEUE_POP(f, l) SLL_QUEUE_POP_N(f, l, next)
+#define SLL_QUEUE_PUSH_FRONT_NIL(f, l, n, nil) SLL_QUEUE_PUSH_FRONT_N_NIL(f, l, n, next, nil)
+#define SLL_QUEUE_PUSH_FRONT(f, l, n) SLL_QUEUE_PUSH_FRONT_N_NIL(f, l, n, next, NULL)
+#define SLL_QUEUE_POP_N_NIL(f, l, next, nil) \
+    (((f) == (l)) ? ((f) = (l) = nil) : ((f) = (f)->next))
+#define SLL_QUEUE_POP_NIL(f, l, nil) SLL_QUEUE_POP_N_NIL(f, l, next, nil)
+#define SLL_QUEUE_POP(f, l) SLL_QUEUE_POP_N_NIL(f, l, next, NULL)
 
 #define SLL_STACK_PUSH_N(f, n, next) ((n)->next = (f), (f) = (n))
 #define SLL_STACK_PUSH(f, n) SLL_STACK_PUSH_N(f, n, next)
-#define SLL_STACK_POP_N(f, next) (((f) == 0) ? 0 : ((f) = (f)->next))
-#define SLL_STACK_POP(f) SLL_STACK_POP_N(f, next)
+#define SLL_STACK_POP_N_NIL(f, next, nil) (((f) == nil) ? nil : ((f) = (f)->next))
+#define SLL_STACK_POP_NIL(f, nil) SLL_STACK_POP_N_NIL(f, next, nil)
+#define SLL_STACK_POP(f) SLL_STACK_POP_N(f, next, NULL)
 
 typedef struct {
     f32 x;
