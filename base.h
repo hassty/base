@@ -226,13 +226,13 @@ static inline Time usec_to_time(u64 usec) {
         usec -= MSEC_TO_USEC(msec);
     }
 
-    return (Time){
-        .usec = (u16)usec,
-        .msec = msec,
-        .sec = sec,
-        .min = min,
-        .hour = hour,
-    };
+    Time result;
+    result.usec = usec;
+    result.msec = msec;
+    result.sec  = sec;
+    result.min  = min;
+    result.hour = hour;
+    return result;
 }
 
 static inline u64 time_to_usec(Time t) {

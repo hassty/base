@@ -10,7 +10,8 @@ void os_sleep_usec(u64 sleepUsec);
 #include <time.h>
 
 u64 os_now_usec(void) {
-    struct timespec now = {0};
+    struct timespec now;
+    MEMORY_ZERO_STRUCT(&now);
     clock_gettime(CLOCK_MONOTONIC, &now);
     return SEC_TO_USEC(now.tv_sec) + NSEC_TO_USEC(now.tv_nsec);
 }
@@ -18,10 +19,9 @@ u64 os_now_usec(void) {
 void os_sleep_usec(u64 sleepUsec) {
     u64 sleepSec = USEC_TO_SEC(sleepUsec);
     u64 sleepNsec = USEC_TO_NSEC(sleepUsec - SEC_TO_USEC(sleepSec));
-    struct timespec req = {
-        .tv_sec = sleepSec,
-        .tv_nsec = sleepNsec,
-    };
+    struct timespec req;
+    req.tv_sec = (time_t)sleepSec;
+    req.tv_nsec = (time_t)sleepNsec;
     while (nanosleep(&req, &req) == -1)
         continue;
 }

@@ -22,8 +22,10 @@ void memory_release(void *ptr, usize size) {
     if (ptr == NULL || size == 0) {
         return;
     }
+    uintptr_t addr = (uintptr_t)ptr; // copy ptr address to avoid use after free warning in log
     free(ptr);
-    LOG_DBG("free(0x%p) released 0x%zx bytes", ptr, size);
+    ptr = NULL;
+    LOG_DBG("free(0x%p) released 0x%zx bytes", (void*)addr, size);
 }
 
 #elif defined(MEMORY_MMAP)
@@ -53,8 +55,9 @@ void memory_release(void *ptr, usize size) {
         return;
     }
     usize size_aligned = ROUND_DIV(size, _memory_internal_pageSize) * _memory_internal_pageSize;
+    uintptr_t addr = (uintptr_t)ptr; // copy ptr address to avoid use after free warning in log
     ASSERT(munmap(ptr, size_aligned) == 0, "munmap error");
-    LOG_DBG("munmap(0x%p) released 0x%zx bytes", ptr, size_aligned);
+    LOG_DBG("munmap(0x%p) released 0x%zx bytes", (void*)addr, size_aligned);
 }
 #else
 #error at least one memory backend must be defined
