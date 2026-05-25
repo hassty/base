@@ -162,7 +162,7 @@ typedef void void_fn_ptr(void);
 #define SLL_STACK_PUSH(f, n) SLL_STACK_PUSH_N(f, n, next)
 #define SLL_STACK_POP_N_NIL(f, next, nil) (((f) == nil) ? nil : ((f) = (f)->next))
 #define SLL_STACK_POP_NIL(f, nil) SLL_STACK_POP_N_NIL(f, next, nil)
-#define SLL_STACK_POP(f) SLL_STACK_POP_N(f, next, NULL)
+#define SLL_STACK_POP(f) SLL_STACK_POP_N_NIL(f, next, NULL)
 
 typedef struct {
     f32 x;
