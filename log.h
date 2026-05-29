@@ -58,12 +58,12 @@ static u64 _log_internal_startUsec = 0;
 static LogLevels _log_internal_level = LOG_DBG;
 
 void log_init(LogLevels level) {
-    _log_internal_startUsec = os_now_usec();
+    _log_internal_startUsec = os_monotonic_usec();
     _log_internal_level = level;
 }
 
 static inline u64 _log_internal_uptime(void) {
-    return os_now_usec() - _log_internal_startUsec;
+    return os_monotonic_usec() - _log_internal_startUsec;
 }
 
 #endif /* LOG_IMPLEMENTATION */
