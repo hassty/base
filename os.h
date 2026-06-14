@@ -43,7 +43,7 @@ u64 os_monotonic_usec(void) {
 }
 
 void os_sleep_msec(u64 sleep_msec) {
-    Sleep(sleep_msec);
+    Sleep((DWORD)sleep_msec);
 }
 #endif
 

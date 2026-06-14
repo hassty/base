@@ -208,26 +208,26 @@ typedef struct {
 
 // TODO: move to separate file?
 static inline Time usec_to_time(u64 usec) {
-    u8 hour = SEC_TO_HOUR(USEC_TO_SEC(usec));
+    u8 hour = (u8)SEC_TO_HOUR(USEC_TO_SEC(usec));
     usec -= SEC_TO_USEC(HOUR_TO_SEC(hour));
     u8 min = 0;
     if (usec > 0) {
-        min = SEC_TO_MIN(USEC_TO_SEC(usec));
+        min = (u8)SEC_TO_MIN(USEC_TO_SEC(usec));
         usec -= SEC_TO_USEC(MIN_TO_SEC(min));
     }
     u8 sec = 0;
     if (usec > 0) {
-        sec = USEC_TO_SEC(usec);
+        sec = (u8)USEC_TO_SEC(usec);
         usec -= SEC_TO_USEC(sec);
     }
     u16 msec = 0;
     if (usec > 0) {
-        msec = USEC_TO_MSEC(usec);
+        msec = (u16)USEC_TO_MSEC(usec);
         usec -= MSEC_TO_USEC(msec);
     }
 
     Time result;
-    result.usec = usec;
+    result.usec = (u16)usec;
     result.msec = msec;
     result.sec  = sec;
     result.min  = min;
