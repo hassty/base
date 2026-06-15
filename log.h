@@ -31,9 +31,9 @@ typedef enum {
 
 #define __LOG_COMMON(_level, _color, _msg, ...)                                      \
 do {                                                                                 \
-    if ((_level) < _log_internal_level) break;                                       \
-    static const char* _log_internal_level_str[] = { LOG_LEVELS(AS_LOG_LEVEL_STR) }; \
-    Time t = usec_to_time(_log_internal_uptime());                                     \
+    if ((_level) < log_get_level()) break;                                           \
+    static const char *_log_internal_level_str[] = { LOG_LEVELS(AS_LOG_LEVEL_STR) }; \
+    Base_Time t = usec_to_time(log_get_uptime());                                    \
     fprintf(stderr,                                                                  \
             _color "[" TIME_FORMAT "] <%s> " __FILE__                                \
                 ":" STR(__LINE__) ":%s: " _msg ANSI_RESET "\n",                      \
@@ -49,6 +49,8 @@ do {                                                                            
 #define LOG_ERR(msg, ...) __LOG_COMMON(LOG_ERR, ANSI_RED, msg, ##__VA_ARGS__)
 
 void log_init(LogLevels level);
+LogLevels log_get_level(void);
+u64 log_get_uptime(void);
 
 #ifdef LOG_IMPLEMENTATION
 
@@ -62,8 +64,12 @@ void log_init(LogLevels level) {
     _log_internal_level = level;
 }
 
-static inline u64 _log_internal_uptime(void) {
+u64 log_get_uptime(void) {
     return os_monotonic_usec() - _log_internal_startUsec;
+}
+
+LogLevels log_get_level(void) {
+    return _log_internal_level;
 }
 
 #endif /* LOG_IMPLEMENTATION */
