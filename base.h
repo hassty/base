@@ -1,7 +1,16 @@
-#ifndef BASE_H
-#define BASE_H
+#pragma once
 
 #include <stdbool.h>
+
+#ifdef __cplusplus
+#define LANG_CPP
+#else
+#define LANG_C
+#endif
+
+#ifdef LANG_CPP
+extern "C" {
+#endif
 
 #if defined(__clang__)
 #define COMPILER_CLANG 1
@@ -240,4 +249,6 @@ static inline u64 time_to_usec(Base_Time t) {
            SEC_TO_USEC(t.sec) + MSEC_TO_USEC(t.msec) + t.usec;
 }
 
-#endif /* BASE_H */
+#ifdef LANG_CPP
+} // extern "C"
+#endif

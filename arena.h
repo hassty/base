@@ -1,7 +1,10 @@
-#ifndef ARENA_H
-#define ARENA_H
+#pragma once
 
 #include "base.h"
+
+#ifdef LANG_CPP
+extern "C" {
+#endif
 
 typedef struct {
     uintptr_t *data;
@@ -13,6 +16,10 @@ Arena arena_create(usize capacity);
 void arena_destroy(Arena *arena);
 void *arena_alloc(Arena *arena, usize size);
 void arena_reset(Arena *arena);
+
+#ifdef LANG_CPP
+} // extern "C"
+#endif
 
 #ifdef ARENA_IMPLEMENTATION
 
@@ -62,5 +69,3 @@ void *arena_alloc(Arena *arena, usize size) {
 
 void arena_reset(Arena *arena) { arena->size = 0; }
 #endif
-
-#endif /* ARENA_H */

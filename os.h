@@ -1,10 +1,17 @@
-#ifndef OS_H
-#define OS_H
+#pragma once
 
 #include "base.h"
 
+#ifdef LANG_CPP
+extern "C" {
+#endif
+
 u64 os_monotonic_usec(void);
 void os_sleep_msec(u64 sleep_msec);
+
+#ifdef LANG_CPP
+} // extern "C"
+#endif
 
 #ifdef OS_IMPLEMENTATION_LINUX
 #include <time.h>
@@ -46,5 +53,3 @@ void os_sleep_msec(u64 sleep_msec) {
     Sleep((DWORD)sleep_msec);
 }
 #endif
-
-#endif /* OS_H */

@@ -1,7 +1,10 @@
-#ifndef LOG_H
-#define LOG_H
+#pragma once
 
 #include "base.h"
+
+#ifdef LANG_CPP
+extern "C" {
+#endif
 
 #define ANSI_RESET "\x1b[0;0m"
 
@@ -52,6 +55,10 @@ void log_init(LogLevels level);
 LogLevels log_get_level(void);
 u64 log_get_uptime(void);
 
+#ifdef LANG_CPP
+} // extern "C"
+#endif
+
 #ifdef LOG_IMPLEMENTATION
 
 #include "os.h"
@@ -73,5 +80,3 @@ LogLevels log_get_level(void) {
 }
 
 #endif /* LOG_IMPLEMENTATION */
-
-#endif /* LOG_H */

@@ -1,11 +1,18 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#pragma once
 
 #include "log.h"
 #include "base.h"
 
+#ifdef LANG_CPP
+extern "C" {
+#endif
+
 void *memory_alloc(usize size);
 void memory_release(void* ptr, usize size);
+
+#ifdef LANG_CPP
+} // extern "C"
+#endif
 
 #if defined(MEMORY_STDLIB)
 #include <stdlib.h>
@@ -62,5 +69,3 @@ void memory_release(void *ptr, usize size) {
 #else
 #error at least one memory backend must be defined
 #endif
-
-#endif /* MEMORY_H */
